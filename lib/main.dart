@@ -104,22 +104,27 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _randomTask(int index) async {
+  void _randomTask(OverlayStore overlayStore, int index) async {
     print("loading $index");
     int sleepFor = 1000 + Random().nextInt(4000);
-    print("loading $index for $sleepFor milliseconds");
+    LoaderModel loader =
+        LoaderModel(message: "loading $index for $sleepFor milliseconds");
+    overlayStore.addLoader(loader);
     await Future.delayed(Duration(milliseconds: sleepFor));
+    overlayStore.removeLoader(loader.id);
     print("finished loading $index");
   }
 
-  void _multipleRandomTasks(int num) async {
+  void _multipleRandomTasks(OverlayStore overlayStore, int num) async {
     for (int i = 0; i < num; i++) {
-      _randomTask(i);
+      _randomTask(overlayStore, i);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final OverlayStore overlayStore =
+        Provider.of<OverlayStore>(context, listen: false);
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -154,15 +159,15 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             FlatButton(
               child: Text("run 1 task"),
-              onPressed: () => _multipleRandomTasks(1),
+              onPressed: () => _multipleRandomTasks(overlayStore, 1),
             ),
             FlatButton(
               child: Text("run 5 tasks"),
-              onPressed: () => _multipleRandomTasks(5),
+              onPressed: () => _multipleRandomTasks(overlayStore, 5),
             ),
             FlatButton(
               child: Text("run 10 tasks"),
-              onPressed: () => _multipleRandomTasks(10),
+              onPressed: () => _multipleRandomTasks(overlayStore, 10),
             ),
             Text(
               'You have pushed the button this many times:',

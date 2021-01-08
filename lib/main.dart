@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 void main() {
@@ -59,6 +61,20 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _randomTask(int index) async {
+    print("loading $index");
+    int sleepFor = 1000 + Random().nextInt(4000);
+    print("loading $index for $sleepFor milliseconds");
+    await Future.delayed(Duration(milliseconds: sleepFor));
+    print("finished loading $index");
+  }
+
+  void _multipleRandomTasks(int num) async {
+    for (int i = 0; i < num; i++) {
+      _randomTask(i);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -93,6 +109,18 @@ class _MyHomePageState extends State<MyHomePage> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            FlatButton(
+              child: Text("run 1 task"),
+              onPressed: () => _multipleRandomTasks(1),
+            ),
+            FlatButton(
+              child: Text("run 5 tasks"),
+              onPressed: () => _multipleRandomTasks(5),
+            ),
+            FlatButton(
+              child: Text("run 10 tasks"),
+              onPressed: () => _multipleRandomTasks(10),
+            ),
             Text(
               'You have pushed the button this many times:',
             ),

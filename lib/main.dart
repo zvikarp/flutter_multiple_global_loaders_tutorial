@@ -1,13 +1,42 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_multiple_global_loaders_tutorial/loader.dart';
+import 'package:flutter_multiple_global_loaders_tutorial/overlayStore.dart';
+import 'package:flutter_multiple_global_loaders_tutorial/widgets/loadingOverlay.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    MultiProvider(providers: [
+      Provider<OverlayStore>(create: (_) => OverlayStore()),
+    ], child: MyApp()),
+  );
 }
 
 class MyApp extends StatelessWidget {
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
+
+  void _inseretOverlays(
+      BuildContext appContext, BuildContext navigatorContext) {
+    return Overlay.of(navigatorContext).insert(
+      OverlayEntry(builder: (navigatorContext) {
+        OverlayStore overlayStore = Provider.of<OverlayStore>(appContext);
+        return Observer(builder: (_) {
+          bool visable = overlayStore.displayLoading;
+          if (visable) {
+            List<LoaderModel> loaders = overlayStore.loaders;
+            List<String> messages =
+                loaders.map((LoaderModel loader) => loader.message).toList();
+            return LoadingOverlayWidget(messages: messages);
+          } else {
+            return Container();
+          }
+        });
+      }),
+    );
+  }
 
   // This widget is the root of your application.
   @override
@@ -30,6 +59,8 @@ class MyApp extends StatelessWidget {
         onWillPop: () async => !await _navigatorKey.currentState.maybePop(),
         child: LayoutBuilder(
           builder: (context, constraints) {
+            WidgetsBinding.instance.addPostFrameCallback(
+                (_) => _inseretOverlays(context, _navigatorKey.currentContext));
             return Material(
               key: _navigatorKey,
               child: MyHomePage(title: 'Flutter Demo Home Page'),

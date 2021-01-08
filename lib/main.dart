@@ -7,6 +7,8 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -24,7 +26,17 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: WillPopScope(
+        onWillPop: () async => !await _navigatorKey.currentState.maybePop(),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return Material(
+              key: _navigatorKey,
+              child: MyHomePage(title: 'Flutter Demo Home Page'),
+            );
+          },
+        ),
+      ),
     );
   }
 }

@@ -55,18 +55,15 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: WillPopScope(
-        onWillPop: () async => !await _navigatorKey.currentState.maybePop(),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            WidgetsBinding.instance.addPostFrameCallback(
-                (_) => _inseretOverlays(context, _navigatorKey.currentContext));
-            return Material(
-              key: _navigatorKey,
-              child: MyHomePage(title: 'Flutter Demo Home Page'),
-            );
-          },
-        ),
+      home: LayoutBuilder(
+        builder: (context, constraints) {
+          WidgetsBinding.instance.addPostFrameCallback(
+              (_) => _inseretOverlays(context, _navigatorKey.currentContext));
+          return Material(
+            key: _navigatorKey,
+            child: MyHomePage(title: 'Flutter Demo Home Page'),
+          );
+        },
       ),
     );
   }
